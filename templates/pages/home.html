@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная - Словарь терминов БАС{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-top-row">
+            <div class="hero-text-content">
+                <h1 class="hero-title">
+                    <span class="hero-title-line1">Переводите термины и выражения</span>
+                    <span class="hero-title-line2">в области беспилотных авиационных систем</span>
+                </h1>
+
+                <div class="lang-selectors-wrapper">
+                    <div class="double-lang-selector">
+                        <!-- Исходный язык -->
+                        <div class="dict-lang-selector" id="source-lang">
+                            <button type="button" class="dict-lang-current">
+                                <span class="dict-lang-selected" data-lang="ru">Русский</span>
+                                <span class="dict-lang-arrow">▼</span>
+                            </button>
+                            <div class="dict-lang-dropdown">
+                                <div class="dict-lang-item" data-lang="ru">Русский</div>
+                                <div class="dict-lang-item" data-lang="en">Английский</div>
+                                <div class="dict-lang-item" data-lang="fr">Французский</div>
+                                <div class="dict-lang-item" data-lang="es">Испанский</div>
+                                <div class="dict-lang-item" data-lang="cn">Китайский</div>
+                            </div>
+                        </div>
+
+                        <!-- Кнопка обмена языков -->
+                         <button type="button" id="swap-languages" class="lang-swap-btn" aria-label="Поменять языки местами">
+                            <span class="swap-icon">⇄</span>
+                        </button>
+
+                        <!-- Целевой язык -->
+                        <div class="dict-lang-selector" id="target-lang">
+                            <button type="button" class="dict-lang-current">
+                                <span class="dict-lang-selected" data-lang="en">Английский</span>
+                                <span class="dict-lang-arrow">▼</span>
+                            </button>
+                            <div class="dict-lang-dropdown">
+                                <div class="dict-lang-item" data-lang="en">Английский</div>
+                                <div class="dict-lang-item" data-lang="ru">Русский</div>
+                                <div class="dict-lang-item" data-lang="fr">Французский</div>
+                                <div class="dict-lang-item" data-lang="es">Испанский</div>
+                                <div class="dict-lang-item" data-lang="cn">Китайский</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <img src="{% static 'img/бпла.png' %}" alt="Беспилотный летательный аппарат">
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="search-section">
+    <div class="container">
+        <div class="search-container">
+            <input
+                type="text"
+                class="search-input"
+                id="search-input"
+                placeholder="Введите слово, выражение, аббревиатуру"
+            >
+            <button type="button" class="search-btn" id="search-btn">Найти</button>
+        </div>
+
+        <div class="quick-links-horizontal">
+            <a href="{% url 'dictionary:history' %}" class="quick-link-horizontal">
+                <img src="{% static 'img/history.png' %}" alt="История" class="quick-link-icon">
+                <span>История</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="info-cards-container">
+        <!-- Здесь при необходимости можно вернуть дополнительные информационные блоки -->
+    </div>
+
+    <div class="ad-card">
+        <p>Тут могла быть ваша реклама</p>
+    </div>
+
+    <div class="subscription-wrapper">
+        <div class="subscription-container">
+            <div class="airplane-container">
+                <img src="{% static 'img/Самолет.png' %}" alt="Самолёт" class="airplane-image">
+            </div>
+
+            <div class="partners-right">
+                <p class="partners-title">Наши партнеры и эксперты</p>
+                <div class="partner-logos">
+                    <img src="{% static 'img/Партнеры.png' %}" alt="Партнеры" class="partners-image">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bas-container">
+        <div class="bas-bottom-cards">
+            <div class="bas-ad-card">
+                <div class="ad-placeholder">
+                    <p>Тут могла быть ваша реклама</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const sourceSelector = document.getElementById("source-lang");
+    const targetSelector = document.getElementById("target-lang");
+    const swapBtn = document.getElementById("swap-languages");
+    const searchInput = document.getElementById("search-input");
+    const searchBtn = document.getElementById("search-btn");
+
+    function setupCustomSelect(selector) {
+        if (!selector) return;
+
+        const currentBtn = selector.querySelector(".dict-lang-current");
+        const selectedSpan = selector.querySelector(".dict-lang-selected");
+        const dropdown = selector.querySelector(".dict-lang-dropdown");
+        const items = selector.querySelectorAll(".dict-lang-item");
+
+        currentBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+
+            document.querySelectorAll(".dict-lang-selector").forEach(otherSelector => {
+                if (otherSelector !== selector) {
+                    otherSelector.classList.remove("open");
+                }
+            });
+
+            selector.classList.toggle("open");
+        });
+
+        items.forEach(item => {
+            item.addEventListener("click", function () {
+                selectedSpan.textContent = item.textContent;
+                selectedSpan.dataset.lang = item.dataset.lang;
+                selector.classList.remove("open");
+            });
+        });
+    }
+
+    setupCustomSelect(sourceSelector);
+    setupCustomSelect(targetSelector);
+
+    document.addEventListener("click", function () {
+        document.querySelectorAll(".dict-lang-selector").forEach(selector => {
+            selector.classList.remove("open");
+        });
+    });
+
+    if (swapBtn && sourceSelector && targetSelector) {
+        swapBtn.addEventListener("click", function () {
+            const sourceSelected = sourceSelector.querySelector(".dict-lang-selected");
+            const targetSelected = targetSelector.querySelector(".dict-lang-selected");
+
+            const tempText = sourceSelected.textContent;
+            const tempLang = sourceSelected.dataset.lang;
+
+            sourceSelected.textContent = targetSelected.textContent;
+            sourceSelected.dataset.lang = targetSelected.dataset.lang;
+
+            targetSelected.textContent = tempText;
+            targetSelected.dataset.lang = tempLang;
+        });
+    }
+
+    function performSearch() {
+        const query = (searchInput.value || "").trim();
+        const sourceLang = sourceSelector.querySelector(".dict-lang-selected").dataset.lang;
+        const targetLang = targetSelector.querySelector(".dict-lang-selected").dataset.lang;
+
+        if (!query) {
+            searchInput.focus();
+            return;
+        }
+
+        const url = `{% url 'dictionary:term_search' %}?query=${encodeURIComponent(query)}&source_lang=${encodeURIComponent(sourceLang)}&target_lang=${encodeURIComponent(targetLang)}`;
+        window.location.href = url;
+    }
+
+    if (searchBtn) {
+        searchBtn.addEventListener("click", performSearch);
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block content %}
+<div class="registration-container">
+  <div class="registration-header">
+    <h1>Регистрация</h1>
+    <p>Создайте аккаунт, чтобы получить доступ к истории поиска и списку избранного</p>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+
+  <form method="post" class="registration-form">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <h2>Логин</h2>
+      <input type="text"
+             name="username"
+             autofocus
+             autocapitalize="none"
+             autocomplete="username"
+             maxlength="150"
+             required
+             id="id_username"
+             class="form-control"
+             placeholder="Например, Иван Иванов"
+             value="{{ form.username.value|default_if_none:'' }}">
+
+      <div class="form-hint">
+        Обязательное поле. Не более 150 символов. Только буквы, цифры и символы @/./+/-/_
+      </div>
+
+      {% if form.username.errors %}
+        <div class="alert alert-danger">
+          {{ form.username.errors }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <h2>Email</h2>
+      <input type="email"
+             name="email"
+             autocomplete="email"
+             required
+             id="id_email"
+             class="form-control"
+             placeholder="example@domain.com"
+             value="{{ form.email.value|default_if_none:'' }}">
+
+      <div class="form-hint">
+        Обязательное поле. Введите действующий email адрес.
+      </div>
+
+      {% if form.email.errors %}
+        <div class="alert alert-danger">
+          {{ form.email.errors }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <h2>Пароль</h2>
+      <input type="password"
+             name="password1"
+             autocomplete="new-password"
+             required
+             id="id_password1"
+             class="form-control">
+
+      <div class="password-requirements">
+        <ul>
+          <li class="requirement">Минимум 8 символов</li>
+          <li class="requirement">Содержит специальные символы</li>
+          <li class="requirement">Содержит цифры</li>
+          <li class="requirement">Содержит заглавные и прописные буквы</li>
+          <li class="requirement">Пароли должны совпадать</li>
+        </ul>
+      </div>
+
+      {% if form.password1.errors %}
+        <div class="alert alert-danger">
+          {{ form.password1.errors }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <h2>Подтверждение пароля</h2>
+      <input type="password"
+             name="password2"
+             autocomplete="new-password"
+             required
+             id="id_password2"
+             class="form-control">
+
+      <div class="form-hint">
+        Для подтверждения введите, пожалуйста, пароль ещё раз.
+      </div>
+
+      {% if form.password2.errors %}
+        <div class="alert alert-danger">
+          {{ form.password2.errors }}
+        </div>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="registration-button">Создать</button>
+  </form>
+
+  <div class="login-link">
+    Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'js/registration.js' %}"></script>
+{% endblock %}

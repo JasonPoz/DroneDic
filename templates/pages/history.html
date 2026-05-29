@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="history-page">
+  <div class="history-container">
+    <h1 class="history-title">История поиска</h1>
+
+    {% if history %}
+      <div class="history-list">
+        {% for item in history %}
+          <div class="history-card">
+            <div class="history-card-header">
+              <h3 class="history-query">{{ item.query }}</h3>
+              <span class="history-date">
+                {{ item.created_at|date:"d.m.Y H:i" }}
+              </span>
+            </div>
+
+            <div class="history-meta">
+              <p>
+                <strong>Направление поиска:</strong>
+                {{ item.source_lang }} → {{ item.target_lang }}
+              </p>
+              <p>
+                <strong>Найдено результатов:</strong>
+                {{ item.results_count }}
+              </p>
+            </div>
+
+            <div class="history-actions">
+              <a href="{% url 'dictionary:term_search' %}?query={{ item.query }}&source_lang={{ item.source_lang }}&target_lang={{ item.target_lang }}"
+                 class="history-repeat-btn">
+                Повторить поиск
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="history-empty">
+        <p>История поиска пока пуста.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
